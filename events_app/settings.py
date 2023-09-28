@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "events",
 ]
 
 MIDDLEWARE = [
@@ -94,7 +95,7 @@ DATABASES = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://8000-ajgreaves-events-app-k4bk4qpbcy.us2.codeanyapp.com/",
+    "https://8000-ajgreaves-events-app-k4bk4qpbcy.us2.codeanyapp.com",
     "https://*.herokuapp.com"
 ]
 
