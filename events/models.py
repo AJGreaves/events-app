@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -24,3 +25,18 @@ class Ticket(models.Model):
 
     def __str__(self):
         return f"Ticket for {self.ticket_holder}"
+
+
+class Review(models.Model):
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, related_name="event_reviews"
+    )
+    reviewer = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="event_reviewers")
+    rating = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)])
+    body = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f"Review of event '{self.event}' by {self.reviewer}"

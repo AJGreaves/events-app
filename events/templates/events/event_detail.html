@@ -1,10 +1,85 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-<!-- Adding a comment to keep the CA workspace alive -->
+
+<style>
+    .red {
+        color: red;
+    }
+
+    .green {
+        color: green;
+    }
+</style>
+
 <h3>Name: {{ event.event_name }}</h3>
 <p>Location: {{ event.location }}</p>
 <p>Date: {{ event.date }}</p>
 
+<hr>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            {% for review in reviews %}
+            <div>
+                <p>{{review.reviewer}}'s review:</p>
+
+                <p class="{% if review.rating == 5 %}green {% elif review.rating == 1 %}red {% endif %}">Rating:
+                    <span id="review_rating{{ review.id }}">{{review.rating}}</span>/5</p>
+
+                <div id="review_body{{ review.id }}">
+                    {{ review.body | linebreaks }}
+                </div>
+
+                {% if user.is_authenticated and review.reviewer == user %}
+                <button class="btn btn-delete" review_id="{{ review.id }}">Delete</button>
+                <button class="btn btn-edit" review_id="{{ review.id }}">Edit</button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <!-- reviews is a list of all the reviews for the viewed event -->
+
+        <div class="col-12 col-md-6">
+            {% if user.is_authenticated %}
+            <div>
+                <h3>Add your review!</h3>
+                <p>Reviewing as: {{ user.username }}</p>
+                <form id="reviewForm" method="post">
+                    {{ review_form | crispy }}
+                    {% csrf_token %}
+                    <button id="submitButton" type="submit">Submit</button>
+                </form>
+            </div>
+            {% else %}
+            <p>Log in to leave a rating</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete review?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete your review? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="deleteConfirm" href="#" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
+
+{% block extras %}
+{% load static %}
+<script src="{% static 'reviews.js' %}"></script>
+{% endblock extras %}
